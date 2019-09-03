@@ -1,0 +1,39 @@
+version: '2.1'
+services:
+  mysql-data:
+    container_name: mysql-server3
+    ports:
+      - 3306:3306  
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=music
+      - MYSQL_USER=jhonnrock
+      - MYSQL_PASSWORD=root123
+    
+    # volumes:
+    #  - ./testdata:/var/lib/mysql
+
+# phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpMyadmin
+    links:
+      - mysql-data
+    environment:
+        PMA_HOST: mysql-data
+    restart: always
+    ports:
+      - 5000:80  
+
+  #for the web    
+  web_laravel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/opt/data
+    container_name: app_play  
+    ports:
+      - 8000:80
+    depends_on:
+      - mysql-data
